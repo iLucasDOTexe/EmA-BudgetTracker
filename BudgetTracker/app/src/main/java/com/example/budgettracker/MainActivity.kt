@@ -10,12 +10,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.room.Room
+import com.example.budgettracker.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
     private lateinit var deletedTransaction: Transaction
     private lateinit var transactions : List<Transaction>
     private lateinit var oldTransactions : List<Transaction>
@@ -25,7 +26,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         transactions = arrayListOf()
 
@@ -34,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
         db = Room.databaseBuilder(this, AppDatabase::class.java, "transactions").build()
 
-        recyclerview.apply {
+        binding.recyclerview.apply {
             adapter = transactionAdapter
             layoutManager = linearLayoutManager
         }
@@ -55,9 +57,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         val swipeHelper = ItemTouchHelper(itemTouchHelper)
-        swipeHelper.attachToRecyclerView(recyclerview)
+        swipeHelper.attachToRecyclerView(binding.recyclerview)
 
-        addTransactionButton.setOnClickListener {
+        binding.addTransactionButton.setOnClickListener {
             val intent = Intent(this, AddTransactionActivity::class.java)
             startActivity(intent)
         }
@@ -77,9 +79,9 @@ class MainActivity : AppCompatActivity() {
         val incomeAmount = transactions.filter { it.amount>0 }.map{it.amount}.sum()
         val expenseAmount = totalAmount - incomeAmount
 
-        balance.text = "%.2f€".format(totalAmount)
-        income.text = "%.2f€".format(incomeAmount)
-        expense.text = "%.2f€".format(expenseAmount)
+        binding.balance.text = "%.2f€".format(totalAmount)
+        binding.income.text = "%.2f€".format(incomeAmount)
+        binding.expense.text = "%.2f€".format(expenseAmount)
     }
 
     private fun undoDelete(){
